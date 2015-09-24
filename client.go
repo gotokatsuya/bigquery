@@ -251,14 +251,14 @@ func (c *Client) nestedFieldsData(nestedFields []*bigquery.TableFieldSchema, tab
 }
 
 func (c *Client) Count(projectID, datasetID, tableID string) (int, error) {
-	query := fmt.Sprintf("select count(*) from [%s.%s]", datasetID, tableID)
+	query := fmt.Sprintf("SELECT COUNT(*) FROM [%s.%s];", datasetID, tableID)
 	maxResult := 1
 	res, err := c.Query(projectID, datasetID, query, maxResult)
 	if err != nil {
 		return 0, err
 	}
 	if len(res) <= 0 {
-		return 0, errors.New("Result of SyncQuery is empty.")
+		return 0, errors.New("Result of Query is empty.")
 	}
 	val, err := strconv.Atoi(res[0][0].(string))
 	if err != nil {

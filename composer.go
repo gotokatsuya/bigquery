@@ -1,22 +1,35 @@
 package bigquery
 
+const (
+	defaultMaxResults = 5000
+)
+
 type Composer struct {
-	ProjectID string
-	DatasetID string
+	ProjectID  string
+	DatasetID  string
+	MaxResults int
 }
 
-func (c *Composer) Query(client *Client, query string, max int) ([][]interface{}, error) {
-	return client.Query(c.ProjectID, c.DatasetID, query, max)
+func NewDefaultComposer(projectID, datasetID string) Composer {
+	return Composer{
+		ProjectID:  projectID,
+		DatasetID:  datasetID,
+		MaxResults: defaultMaxResults,
+	}
 }
 
-func (c *Composer) PagingQuery(client *Client, query string, max int) ([][]interface{}, []string, error) {
-	return client.PagingQuery(c.ProjectID, c.DatasetID, query, max)
+func (c *Composer) Query(client *Client, query string) ([][]interface{}, error) {
+	return client.Query(c.ProjectID, c.DatasetID, query, c.MaxResults)
 }
 
-func (c *Composer) AsyncPagingQuery(client *Client, query string, max int, f func([][]interface{}, []string)) {
+func (c *Composer) PagingQuery(client *Client, query string) ([][]interface{}, []string, error) {
+	return client.PagingQuery(c.ProjectID, c.DatasetID, query, c.MaxResults)
+}
+
+func (c *Composer) AsyncPagingQuery(client *Client, query string, f func([][]interface{}, []string)) {
 	dataChan := make(chan Data)
 
-	go client.AsyncPagingQuery(c.ProjectID, c.DatasetID, query, max, dataChan)
+	go client.AsyncPagingQuery(c.ProjectID, c.DatasetID, query, c.MaxResults, dataChan)
 
 L:
 	for {
