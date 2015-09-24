@@ -42,11 +42,11 @@ type Data struct {
 	Err     error
 }
 
-func (c *Client) AsyncQuery(projectID, datasetID, query string, max int, dataChan chan Data) {
+func (c *Client) AsyncPagingQuery(projectID, datasetID, query string, max int, dataChan chan Data) {
 	c.pagedQuery(projectID, datasetID, query, max, dataChan)
 }
 
-func (c *Client) Query(projectID, datasetID, query string, max int) ([][]interface{}, []string, error) {
+func (c *Client) PagingQuery(projectID, datasetID, query string, max int) ([][]interface{}, []string, error) {
 	return c.pagedQuery(projectID, datasetID, query, max, nil)
 }
 
@@ -154,7 +154,7 @@ func (c *Client) pageOverJob(rowCount int, jobRef *bigquery.JobReference, pageTo
 	return nil
 }
 
-func (c *Client) SyncQuery(projectID, datasetID, query string, max int) ([][]interface{}, error) {
+func (c *Client) Query(projectID, datasetID, query string, max int) ([][]interface{}, error) {
 
 	datasetRef := &bigquery.DatasetReference{
 		ProjectId: projectID,
@@ -253,7 +253,7 @@ func (c *Client) nestedFieldsData(nestedFields []*bigquery.TableFieldSchema, tab
 func (c *Client) Count(projectID, datasetID, tableID string) (int, error) {
 	query := fmt.Sprintf("select count(*) from [%s.%s]", datasetID, tableID)
 	maxResult := 1
-	res, err := c.SyncQuery(projectID, datasetID, query, maxResult)
+	res, err := c.Query(projectID, datasetID, query, maxResult)
 	if err != nil {
 		return 0, err
 	}

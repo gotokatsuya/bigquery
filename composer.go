@@ -5,18 +5,18 @@ type Composer struct {
 	DatasetID string
 }
 
-func (c *Composer) SyncQuery(client *Client, query string, max int) ([][]interface{}, error) {
-	return client.SyncQuery(c.ProjectID, c.DatasetID, query, max)
-}
-
-func (c *Composer) Query(client *Client, query string, max int) ([][]interface{}, []string, error) {
+func (c *Composer) Query(client *Client, query string, max int) ([][]interface{}, error) {
 	return client.Query(c.ProjectID, c.DatasetID, query, max)
 }
 
-func (c *Composer) AsyncQuery(client *Client, query string, max int, f func([][]interface{}, []string)) {
+func (c *Composer) PagingQuery(client *Client, query string, max int) ([][]interface{}, []string, error) {
+	return client.PagingQuery(c.ProjectID, c.DatasetID, query, max)
+}
+
+func (c *Composer) AsyncPagingQuery(client *Client, query string, max int, f func([][]interface{}, []string)) {
 	dataChan := make(chan Data)
 
-	go client.AsyncQuery(c.ProjectID, c.DatasetID, query, max, dataChan)
+	go client.AsyncPagingQuery(c.ProjectID, c.DatasetID, query, max, dataChan)
 
 L:
 	for {
