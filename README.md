@@ -49,8 +49,7 @@ func GetOneRecord() ([][]interface{}, error) {
 	}
 	
 	// rows[ number of row ][ number of column ]
-	// So, you can get values are saved on BigQuery, `rows[0][0], rows[0][1], rows[0][2], ...`.
-	// For example, description := rows[0][0].(string)
+	// For example, When a table has 'id' as first column, table_id := rows[0][0].(string)
 	
 	return rows, nil
 }
