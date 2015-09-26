@@ -4,7 +4,7 @@ Written in go.
 
 
 ## Install
-```c
+```
 go get github.com/gotokatsuya/bigquery
 ```
 
@@ -22,13 +22,11 @@ const (
 	tableID   = "table-name"
 )
 
+// Count ...
 func Count() (int, error) {
 	client, err := bigquery.NewClient(email, pemKeyPath)
 	if err != nil {
 		return 0, err
-	}
-	if client == nil {
-		return 0, errors.New("Client is nil.")
 	}
 	composer := bigquery.NewDefaultComposer(projectID, datasetID)
 	count, err := composer.Count(client, tableID)
@@ -38,19 +36,22 @@ func Count() (int, error) {
 	return count, nil
 }
 
+// GetOneRecord ...
 func GetOneRecord() ([][]interface{}, error) {
 	client, err := bigquery.NewClient(email, pemKeyPath)
 	if err != nil {
 		return nil, err
-	}
-	if client == nil {
-		return nil, errors.New("Client is nil.")
 	}
 	composer := bigquery.NewDefaultComposer(projectID, datasetID)
 	rows, err := composer.Query(client, fmt.Sprintf("SELECT * FROM [%s.%s] LIMIT 1;", datasetID, tableID))
 	if err != nil {
 		return nil, err
 	}
+	
+	// rows[ number of row ][ number of column ]
+	// So, you can get values are saved on BigQuery, `rows[0][0], rows[0][1], rows[0][2], ...`.
+	// For example, description := rows[0][0].(string)
+	
 	return rows, nil
 }
 
