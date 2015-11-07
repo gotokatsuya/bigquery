@@ -50,6 +50,11 @@ func (c *Client) PagingQuery(projectID, datasetID, query string, max int) ([][]i
 	return c.pagedQuery(projectID, datasetID, query, max, nil)
 }
 
+const (
+	// 120s ( bigquery's default is 10s )
+	defaultTimeOutMs = 120000
+)
+
 func (c *Client) pagedQuery(projectID, datasetID, query string, max int, dataChan chan Data) ([][]interface{}, []string, error) {
 	datasetRef := &bigquery.DatasetReference{
 		ProjectId: projectID,
@@ -61,6 +66,7 @@ func (c *Client) pagedQuery(projectID, datasetID, query string, max int, dataCha
 		Query:          query,
 		MaxResults:     int64(max),
 		Kind:           "json",
+		TimeoutMs:      defaultTimeOutMs,
 	}
 
 	qr, err := c.BigQueryService.Jobs.Query(projectID, req).Do()
@@ -166,6 +172,7 @@ func (c *Client) Query(projectID, datasetID, query string, max int) ([][]interfa
 		Query:          query,
 		MaxResults:     int64(max),
 		Kind:           "json",
+		TimeoutMs:      defaultTimeOutMs,
 	}
 
 	results, err := c.BigQueryService.Jobs.Query(projectID, req).Do()
