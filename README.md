@@ -2,6 +2,7 @@ bigquery
 =====  
 Written in go.  
 
+This is inspired by [Nice BigQuery Project](https://github.com/DailyBurn/bigquery).
 
 ## Install
 ```
