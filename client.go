@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	bigquery "code.google.com/p/google-api-go-client/bigquery/v2"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
+	bigquery "google.golang.org/api/bigquery/v2"
 )
 
 type Client struct {
