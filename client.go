@@ -188,6 +188,46 @@ func (c *Client) Query(projectID, datasetID, query string, max int) ([][]interfa
 	return c.makeRows(results.Schema, results.Rows), nil
 }
 
+// InsertQueryResultAfterTruncate execute query with overwriting table
+func (c *Client) InsertQueryResultAfterTruncate(projectID, datasetID, tableID, query string, max int) ([][]interface{}, error) {
+
+	tableref := &bigquery.TableReference{
+		ProjectId: projectID,
+		DatasetId: datasetID,
+		TableId:   tableID,
+	}
+
+	jobconf := &bigquery.JobConfiguration{
+		Query: &bigquery.JobConfigurationQuery{
+			DestinationTable: tableref,
+			Query:            query,
+			WriteDisposition: "WRITE_TRUNCATE",
+		},
+	}
+
+	job := &bigquery.Job{
+		Configuration: jobconf,
+	}
+
+	job, err := c.BigQueryService.Jobs.Insert(projectID, job).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	jobID := job.JobReference.JobId
+	results, err := c.BigQueryService.Jobs.GetQueryResults(projectID, jobID).MaxResults(int64(max)).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	numRows := int(results.TotalRows)
+	if numRows > int(max) {
+		numRows = int(max)
+	}
+
+	return c.makeRows(results.Schema, results.Rows), nil
+}
+
 func (c *Client) makeHeaders(bqSchema *bigquery.TableSchema) []string {
 	headers := make([]string, len(bqSchema.Fields))
 	for i, f := range bqSchema.Fields {
