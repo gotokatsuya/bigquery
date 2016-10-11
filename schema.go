@@ -40,7 +40,7 @@ func convertToSchema(schemaStruct interface{}) (*bigquery.TableSchema, error) {
 	schema := &bigquery.TableSchema{}
 	for i, max := 0, vt.NumField(); i < max; i++ {
 		f := vt.Field(i)
-		if f.PkgPath != "" {
+		if f.PkgPath != "" && !f.Anonymous {
 			continue // skip private field
 		}
 
@@ -152,7 +152,7 @@ func convertStructToMap(schemaStruct interface{}) (map[string]interface{}, error
 	data := make(map[string]interface{})
 	for i, max := 0, vt.NumField(); i < max; i++ {
 		f := vt.Field(i)
-		if f.PkgPath != "" {
+		if f.PkgPath != "" && !f.Anonymous {
 			continue // skip private field
 		}
 
